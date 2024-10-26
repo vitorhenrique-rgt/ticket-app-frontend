@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from './Header';
+import Header from '../../components/Header';
 
 const apiUrl  = import.meta.env.VITE_API_URL
 
@@ -24,9 +24,11 @@ const UserList = () => {
 
   const handleDelete = async (id) => {
     if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
+      
       try {
         await axios.delete(`${apiUrl}/api/users/${id}`);
         setUsers(users.filter((user) => user.id !== id));
+        console.log(users)
       } catch (error) {
         console.error('Erro ao excluir o usuário:', error);
       }
