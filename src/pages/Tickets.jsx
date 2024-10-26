@@ -19,7 +19,7 @@ const Tickets = () => {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axios.get(`${apiUrl}tickets/?adminId=${userId}`); // Altere para a URL correta
+        const response = await axios.get(`${apiUrl}/tickets/?adminId=${userId}`); // Altere para a URL correta
         setTickets(response.data.tickets);
       } catch (error) {
         console.error('Error fetching tickets:', error);
