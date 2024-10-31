@@ -1,18 +1,18 @@
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import Tickets from './pages/Tickets';
-import NewTicket from './pages/NewTicket';
-import UserList from './pages/UserList';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import ProtectedRoute from './pages/ProtectedRoute';
-import EditUser from './pages/EditUser';
-import CreateUser from './pages/CreateUser';
-import CompanyList from './pages/CompanyList';
-import EditCompany from './pages/EditCompany';
-import CreateCompany from './pages/CreateCompany';
-import TagList from './pages/TagList';
-import EditTag from './pages/EditTag';
-import CreateTag from './pages/CreateTag';
-import Dashboard from './pages/Dashboard';
+import CompanyList from './pages/companies/CompanyList';
+import CreateCompany from './pages/companies/CreateCompany';
+import EditCompany from './pages/companies/EditCompany';
+import Dashboard from './pages/dashboard/Dashboard';
+import Login from './pages/login/Login';
+import CreateTag from './pages/tags/CreateTag';
+import EditTag from './pages/tags/EditTag';
+import TagList from './pages/tags/TagList';
+import NewTicket from './pages/tickets/NewTicket';
+import Tickets from './pages/tickets/TicketsList';
+import CreateUser from './pages/users/CreateUser';
+import EditUser from './pages/users/EditUser';
+import UserList from './pages/users/UserList';
 
 function App() {
   return (

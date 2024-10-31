@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from './Header';
+import Header from '../../components/header/Header';
 
 const apiUrl = import.meta.env.VITE_API_URL
 
@@ -19,7 +19,7 @@ const Tickets = () => {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axios.get(`${apiUrl}tickets/?adminId=${userId}`); // Altere para a URL correta
+        const response = await axios.get(`${apiUrl}/api/tickets/?adminId=${userId}`); // Altere para a URL correta
         setTickets(response.data.tickets);
       } catch (error) {
         console.error('Error fetching tickets:', error);
