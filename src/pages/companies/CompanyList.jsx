@@ -11,7 +11,7 @@ const CompanyList = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await axios.get(`${apiUrl}companies`);
+        const response = await axios.get(`${apiUrl}/api/companies`);
         setCompanies(response.data);
       } catch (error) {
         console.error('Erro ao buscar empresas:', error);

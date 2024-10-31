@@ -60,7 +60,7 @@ function App() {
           </ProtectedRoute>
         } />
 
-<Route path="/admin/tags" element={
+        <Route path="/admin/tags" element={
           <ProtectedRoute>
             <TagList />
           </ProtectedRoute>
