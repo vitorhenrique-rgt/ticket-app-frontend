@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 import axios from 'axios';
-=======
 import {
 	Box,
 	Button,
@@ -11,7 +9,6 @@ import {
 	Typography,
 } from "@mui/material";
 import axios from "axios";
->>>>>>> ea53380b2babfc6fe9137f757c84ce8339eecd30
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -21,7 +18,7 @@ const Login = () => {
   const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-<<<<<<< HEAD
+
   const navigate = useNavigate();
 
   console.log(apiUrl)
@@ -46,7 +43,7 @@ const Login = () => {
       if (response.status === 200) {
         const { id, nickname, admin  } = response.data.user; // Captura userId e nickname
         // Aqui, você pode armazenar o userId e o nickname em um contexto, localStorage ou onde preferir
-=======
+
 	const navigate = useNavigate();
 
 	// Verifica se o usuário já está logado
@@ -70,12 +67,12 @@ const Login = () => {
 			if (response.status === 200) {
 				const { id, nickname, admin } = response.data.user; // Captura userId e nickname
 				// Aqui, você pode armazenar o userId e o nickname em um contexto, localStorage ou onde preferir
->>>>>>> ea53380b2babfc6fe9137f757c84ce8339eecd30
+
         sessionStorage.setItem('userId', id); // Armazena userId no localStorage
         sessionStorage.setItem('nickname', nickname); // Armazena nickname no localStorage
         sessionStorage.setItem('admin', admin);
         navigate('/tickets');
-<<<<<<< HEAD
+
       }
     } catch (error) {
       setError('Nickname ou senha inválidos.');
@@ -125,7 +122,7 @@ const Login = () => {
       </div>
     </div>
   );
-=======
+
 			}
 		} catch (error) {
 			setError("Nome ou senha inválidos.");
@@ -195,7 +192,7 @@ const Login = () => {
 			</Card>
 		</Box>
 	);
->>>>>>> ea53380b2babfc6fe9137f757c84ce8339eecd30
+
 };
 
 export default Login;
