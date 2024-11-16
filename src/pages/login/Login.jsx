@@ -11,7 +11,6 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  console.log(apiUrl);
   // Verifica se o usuário já está logado
   useEffect(() => {
     const userId = sessionStorage.getItem("userId"); // Ou localStorage se preferir
