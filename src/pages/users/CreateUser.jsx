@@ -1,16 +1,25 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Container from "../../components/container/Container";
+import {
+  Button,
+  Card,
+  Checkbox,
+  Label,
+  Select,
+  TextInput,
+} from "flowbite-react";
 
-const apiUrl  = import.meta.env.VITE_API_URL
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const CreateUser = () => {
-  const [name, setName] = useState('');
-  const [nickname, setNickname] = useState('');
-  let [password, setPassword] = useState('');
+  const [name, setName] = useState("");
+  const [nickname, setNickname] = useState("");
+  let [password, setPassword] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
-  const [companies, setCompanies] = useState([]); 
-  const [selectedCompany, setSelectedCompany] = useState('');
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState("");
   const navigate = useNavigate();
 
   // Função para buscar as companies do banco
@@ -21,7 +30,7 @@ const CreateUser = () => {
         const data = await response.data;
         setCompanies(data);
       } catch (error) {
-        console.error('Erro ao buscar as empresas:', error);
+        console.error("Erro ao buscar as empresas:", error);
       }
     };
 
@@ -30,12 +39,7 @@ const CreateUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    password === '' ? password='123' :  password;
-    console.log(name)
-    console.log(nickname)
-    console.log(password)
-    console.log(isAdmin)
-    console.log(selectedCompany)
+    password === "" ? (password = "123") : password;
 
     try {
       await axios.post(`${apiUrl}/api/users`, {
@@ -43,91 +47,95 @@ const CreateUser = () => {
         nickname,
         password,
         isAdmin,
-        companyId:selectedCompany
+        companyId: selectedCompany,
       });
 
-      alert('Usuário criado com sucesso!');
-      navigate('/admin/users'); // Redireciona para a área administrativa
+      alert("Usuário criado com sucesso!");
+      navigate("/admin/users"); // Redireciona para a área administrativa
     } catch (error) {
-      console.error('Erro ao criar usuário:', error);
-      alert('Erro ao criar usuário. Por favor, tente novamente.');
+      console.error("Erro ao criar usuário:", error);
+      alert("Erro ao criar usuário. Por favor, tente novamente.");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-md max-w-md w-full">
-        <h2 className="text-2xl text-white mb-6 text-center">Criar Novo Usuário</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-white text-sm font-medium mb-2" htmlFor="name">
-              Nome
-            </label>
-            <input
-              type="text"
+    <Container>
+      <Card className="w-full max-w-xl">
+        <h2 className="mb-6 text-center text-2xl dark:text-white">
+          Criar Novo Usuário
+        </h2>
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="name" value="Nome" />
+            </div>
+            <TextInput
               id="name"
-              className="w-full p-3 rounded-md bg-gray-700 text-white border-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              type="text"
+              required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-white text-sm font-medium mb-2" htmlFor="nickName">
-            Apelido
-            </label>
-            <input
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="nickname" value="Apelido" />
+            </div>
+            <TextInput
+              id="nickname"
               type="text"
-              id="nickName"
-              className="w-full p-3 rounded-md bg-gray-700 text-white border-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
-              required
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-white text-sm font-medium mb-2" htmlFor="company">
-              Empresa
-            </label>
-            <select
-              id="company"
-              className="w-full p-3 rounded-md bg-gray-700 text-white border-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="companies" value="Empresa" />
+            </div>
+            <Select
+              id="companies"
+              required
               onChange={(e) => setSelectedCompany(e.target.value)}
             >
               <option value="">Selecione uma empresa</option>
-              {companies.map((company)=>(
-                  <option key={company.id} value={company.id}>{company.name}</option>
-                ))}
-            </select>
+              {companies.map((company) => (
+                <option key={company.id} value={company.id}>
+                  {company.name}
+                </option>
+              ))}
+            </Select>
           </div>
-
-          <div className="mb-4">
-            <label className="block text-white text-sm font-medium mb-2" htmlFor="password">
-              Senha
-            </label>
-            <input
-              type="password"
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="password" value="Senha" />
+            </div>
+            <TextInput
               id="password"
-              className="w-full p-3 rounded-md bg-gray-700 text-white border-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              type="password"
+              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div className="mb-4 flex gap-2">
-            <label className="block text-white text-sm font-medium" htmlFor="isAdmin">
-              Administrador
-            </label>
-            <input type="checkbox" id='isAdmin'checked={isAdmin} onChange={(e) => setIsAdmin(e.target.checked)} />
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="repeat-password" value="Repita  a senha" />
+            </div>
+            <TextInput id="repeat-password" type="password" required />
           </div>
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-3 rounded-md hover:bg-indigo-500 transition duration-200"
-          >
-            Criar Usuário
-          </button>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="isAdmin"
+              checked={isAdmin}
+              onChange={(e) => setIsAdmin(e.target.checked)}
+            />
+            <Label htmlFor="isAdmin">Administrador</Label>
+          </div>
+          <Button type="submit">Criar Usuário</Button>
         </form>
-      </div>
-    </div>
+      </Card>
+    </Container>
   );
 };
 

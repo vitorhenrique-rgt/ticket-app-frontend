@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Container from "../../components/container/Container";
 import {
   Button,
@@ -13,19 +13,21 @@ import {
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-const NewTicket = () => {
+const ManageTicket = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [requesters, setRequesters] = useState([]);
-  const [SelectedRequester, setSelectedRequester] = useState("");
-  const [status, setStatus] = useState("open");
+  const [selectedRequester, setSelectedRequester] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("open");
   const [tags, setTags] = useState([]);
   const [selectedTag, setSelectedTag] = useState("");
   const [companies, setCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState("");
+  const [ticket, setTicket] = useState("");
   const navigate = useNavigate();
+  const { id } = useParams();
 
-  // Função para buscar as tags do banco
+  // Função para buscar as tags
   useEffect(() => {
     const fetchTags = async () => {
       try {
@@ -39,7 +41,7 @@ const NewTicket = () => {
     fetchTags();
   }, []);
 
-  // Função para buscar os users do banco
+  // Função para buscar os users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -53,7 +55,7 @@ const NewTicket = () => {
     fetchUsers();
   }, []);
 
-  // Função para buscar as companies do banco
+  // Função para buscar as companies
   useEffect(() => {
     const fetchCompany = async () => {
       try {
@@ -67,6 +69,26 @@ const NewTicket = () => {
     fetchCompany();
   }, []);
 
+  useEffect(() => {
+    if (id) {
+      const fetchTicket = async () => {
+        try {
+          const response = await axios.get(`${apiUrl}/api/tickets/${id}`);
+          const data = await response.data;
+          setTitle(data.title);
+          setDescription(data.description);
+          setSelectedTag(data.Tags[0].id);
+          setSelectedRequester(data.requesterId);
+          setSelectedStatus(data.status);
+          setSelectedCompany(data.companyId);
+        } catch (error) {
+          console.error("Erro ao buscar o ticket:", error);
+        }
+      };
+      fetchTicket();
+    }
+  }, [id]); // `useEffect` será executado apenas quando `id` mudar
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const userId = sessionStorage.getItem("userId");
@@ -75,27 +97,31 @@ const NewTicket = () => {
       return;
     }
 
-    try {
-      const response = await axios.post(`${apiUrl}/api/tickets`, {
-        title,
-        description,
-        status,
-        tagId: selectedTag,
-        requesterId: SelectedRequester,
-        adminId: userId,
-        companyId: selectedCompany,
-      });
+    if (id) {
+      //logica para alteração
+    } else {
+      try {
+        const response = await axios.post(`${apiUrl}/api/tickets`, {
+          title,
+          description,
+          status: selectedStatus,
+          tagId: selectedTag,
+          requesterId: selectedRequester,
+          adminId: userId,
+          companyId: selectedCompany,
+        });
 
-      if (response.status === 201) {
-        navigate("/tickets"); // Redireciona para a listagem de tickets
-      } else {
-        console.log("Erro ao criar o ticket", response.data);
+        if (response.status === 201) {
+          navigate("/tickets"); // Redireciona para a listagem de tickets
+        } else {
+          console.log("Erro ao criar o ticket", response.data);
+        }
+      } catch (error) {
+        console.error(
+          "Erro na requisição:",
+          error.response ? error.response.data : error.message,
+        );
       }
-    } catch (error) {
-      console.error(
-        "Erro na requisição:",
-        error.response ? error.response.data : error.message,
-      );
     }
   };
 
@@ -103,9 +129,8 @@ const NewTicket = () => {
     <Container>
       <Card className="w-full max-w-xl">
         <h2 className="mb-6 text-center text-2xl dark:text-white">
-          Novo Ticket
+          {id ? "Editar Ticket" : "Novo Ticket"}
         </h2>
-
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>
             <div className="mb-2 block">
@@ -138,10 +163,11 @@ const NewTicket = () => {
             </div>
             <Select
               id="user"
+              value={selectedRequester}
               onChange={(e) => setSelectedRequester(e.target.value)}
               required
             >
-              <option value="">Selecione uma usuário</option>
+              {!id && <option value="">Selecione uma usuário</option>}
               {requesters.map((requester) => (
                 <option key={requester.id} value={requester.id}>
                   {requester.name}
@@ -155,10 +181,11 @@ const NewTicket = () => {
             </div>
             <Select
               id="company"
+              value={selectedCompany}
               onChange={(e) => setSelectedCompany(e.target.value)}
               required
             >
-              <option value="">Selecione uma empresa</option>
+              {!id && <option value="">Selecione uma empresa</option>}
               {companies.map((company) => (
                 <option key={company.id} value={company.id}>
                   {company.name}
@@ -172,8 +199,8 @@ const NewTicket = () => {
             </div>
             <Select
               id="status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
               required
             >
               <option value="open">Aberto</option>
@@ -187,10 +214,11 @@ const NewTicket = () => {
             </div>
             <Select
               id="tag"
+              value={selectedTag}
               onChange={(e) => setSelectedTag(e.target.value)}
               required
             >
-              <option value="">Selecione uma tag</option>
+              {!id && <option value="">Selecione uma tag</option>}
               {tags.map((tag) => (
                 <option key={tag.id} value={tag.id}>
                   {tag.name}
@@ -204,7 +232,7 @@ const NewTicket = () => {
               type="button"
               color="failure"
               onClick={() => {
-                navigate("/tickets");
+                navigate(-1);
               }}
             >
               <svg
@@ -253,4 +281,4 @@ const NewTicket = () => {
   );
 };
 
-export default NewTicket;
+export default ManageTicket;

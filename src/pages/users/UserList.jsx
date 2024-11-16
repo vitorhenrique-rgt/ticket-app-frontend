@@ -1,17 +1,30 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-<<<<<<< HEAD
-import Header from '../../components/header/Header';
-=======
-import Header from '../../components/Header';
->>>>>>> ea53380b2babfc6fe9137f757c84ce8339eecd30
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Container from "../../components/container/Container";
+import { Button, Table } from "flowbite-react";
 
-const apiUrl  = import.meta.env.VITE_API_URL
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
+  const [companies, setCompanies] = useState([]);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCompany = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/companies`);
+        const data = await response.data;
+        setCompanies(data);
+      } catch (error) {
+        console.error("Erro ao buscar as empresas:", error);
+      }
+    };
+
+    fetchCompany();
+  }, []);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -19,78 +32,106 @@ const UserList = () => {
         const response = await axios.get(`${apiUrl}/api/users`);
         setUsers(response.data);
       } catch (error) {
-        console.error('Erro ao buscar usuários:', error);
+        console.error("Erro ao buscar usuários:", error);
       }
     };
 
     fetchUsers();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
-      
-      try {
-        await axios.delete(`${apiUrl}/api/users/${id}`);
-        setUsers(users.filter((user) => user.id !== id));
-        console.log(users)
-      } catch (error) {
-        console.error('Erro ao excluir o usuário:', error);
-      }
-    }
-  };
+  // const handleDelete = async (id) => {
+  //   if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
+  //     try {
+  //       await axios.delete(`${apiUrl}/api/users/${id}`);
+  //       setUsers(users.filter((user) => user.id !== id));
+  //       console.log(users);
+  //     } catch (error) {
+  //       console.error("Erro ao excluir o usuário:", error);
+  //     }
+  //   }
+  // };
 
   const handleEdit = (id) => {
     navigate(`/admin/users/edit/${id}`);
   };
 
   const handleAddNew = () => {
-    navigate('/admin/users/new');
+    navigate("/admin/users/new");
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gray-900 gap-2">
-      <Header />
-      <div className="bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-3xl">
-        <h2 className="text-2xl text-white mb-6 text-center">Gerenciar Usuários</h2>
-        <button
-          onClick={handleAddNew}
-          className="mb-4 bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-500 transition duration-200"
-        >
+    <Container>
+      <div className="flex w-full items-center justify-between">
+        <h2 className="mb-6 text-center text-2xl dark:text-white">
+          Gerenciar Usuários
+        </h2>
+        <Button onClick={handleAddNew}>
           Adicionar Novo Usuário
-        </button>
-        <table className="w-full text-white">
-          <thead>
-            <tr>
-              <th className="text-left p-2">ID</th>
-              <th className="text-left p-2">Nome</th>
-              <th className="text-left p-2">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td className="p-2">{user.id}</td>
-                <td className="p-2">{user.name}</td>
-                <td className="p-2">
-                  <button
+          <svg
+            className="ml-2 h-6 w-6 text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+            />
+          </svg>
+        </Button>
+      </div>
+      <div className="w-full overflow-x-auto">
+        <Table>
+          <Table.Head>
+            <Table.HeadCell>#</Table.HeadCell>
+            <Table.HeadCell>Nome</Table.HeadCell>
+            <Table.HeadCell>Empresa</Table.HeadCell>
+            <Table.HeadCell>Status</Table.HeadCell>
+            <Table.HeadCell>
+              <span className="sr-only">Editar</span>
+            </Table.HeadCell>
+          </Table.Head>
+          <Table.Body className="divide-y">
+            {users.map((user, index) => (
+              <Table.Row
+                key={user.id}
+                className="bg-white dark:border-gray-700 dark:bg-gray-800"
+              >
+                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                  {`${index + 1}`}
+                </Table.Cell>
+                <Table.Cell>{user.name}</Table.Cell>
+                {companies
+                  .filter((company) => company.id === user.companyId)
+                  .map((company) => (
+                    <Table.Cell key={company.id}>{company.name}</Table.Cell>
+                  ))}
+                <Table.Cell
+                  className={user.isActive ? "text-green-400" : "text-red-400"}
+                >
+                  {user.isActive ? "Ativo" : "Desativado"}
+                </Table.Cell>
+                <Table.Cell>
+                  <a
+                    href="#"
+                    className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
                     onClick={() => handleEdit(user.id)}
-                    className="mr-2 bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-500 transition duration-200"
                   >
                     Editar
-                  </button>
-                  <button
-                    onClick={() => handleDelete(user.id)}
-                    className="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-500 transition duration-200"
-                  >
-                    Excluir
-                  </button>
-                </td>
-              </tr>
+                  </a>
+                </Table.Cell>
+              </Table.Row>
             ))}
-          </tbody>
-        </table>
+          </Table.Body>
+        </Table>
       </div>
-    </div>
+    </Container>
   );
 };
 
