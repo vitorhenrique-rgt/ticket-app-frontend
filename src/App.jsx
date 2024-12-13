@@ -9,15 +9,11 @@ import AuthenticatedLayout from "./components/layouts/AuthenticatedLayout";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Login from "./pages/login/Login";
 import UserList from "./pages/users/UserList";
-import Tickets from "./pages/tickets/TicketsList";
-import TagList from "./pages/tags/TagList";
-import EditTag from "./pages/tags/EditTag";
-import CreateTag from "./pages/tags/CreateTag";
-import ManageUsers from "./pages/users/ManageUsers";
-import ManageTicket from "./pages/tickets/ManageTicket";
+import Tickets from "./pages/tickets/Tickets";
+import ManagerUsers from "./pages/users/ManagerUsers";
 import CompanyList from "./pages/companies/CompanyList";
-import CreateCompany from "./pages/companies/CreateCompany";
-import EditCompany from "./pages/companies/EditCompany";
+import ManagerCompanies from "./pages/companies/ManagerCompanies";
+import ManagerTag from "./pages/tags/ManagerTags";
 // (outros imports)
 
 function App() {
@@ -33,19 +29,19 @@ function App() {
             </ProtectedRoute>
           }
         >
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tickets" element={<Tickets />} />
-          <Route path="/new-ticket" element={<ManageTicket />} />
-          <Route path="/edit-ticket/:id" element={<ManageTicket />} />
-          <Route path="/admin" element={<Dashboard />} />
           <Route path="/admin/users" element={<UserList />} />
-          <Route path="/admin/users/edit/:id" element={<ManageUsers />} />
-          <Route path="/admin/users/new" element={<ManageUsers />} />
-          <Route path="/admin/tags" element={<TagList />} />
-          <Route path="/admin/tags/new" element={<CreateTag />} />
-          <Route path="/admin/tags/edit/:id" element={<EditTag />} />
+          <Route path="/admin/users/edit/:id" element={<ManagerUsers />} />
+          <Route path="/admin/users/new" element={<ManagerUsers />} />
+          <Route path="/admin/tags/new" element={<ManagerTag />} />
+          <Route path="/admin/tags/edit/:id" element={<ManagerTag />} />
           <Route path="/admin/companies" element={<CompanyList />} />
-          <Route path="/admin/companies/new" element={<CreateCompany />} />
-          <Route path="/admin/companies/edit/:id" element={<EditCompany />} />
+          <Route path="/admin/companies/new" element={<ManagerCompanies />} />
+          <Route
+            path="/admin/companies/edit/:id"
+            element={<ManagerCompanies />}
+          />
         </Route>
       </Routes>
     </Router>

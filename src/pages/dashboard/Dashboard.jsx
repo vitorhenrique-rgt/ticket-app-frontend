@@ -1,8 +1,8 @@
 import axios from "axios";
 import Chart from "chart.js/auto";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Container from "../../components/container/Container";
+import { Button } from "flowbite-react";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -10,7 +10,6 @@ const Dashboard = () => {
   const [ticketStats, setTicketStats] = useState([]); // Inicializa como array vazio
   const [tagStats, setTagStats] = useState([]); // Inicializa como array vazio
   const [filter, setFilter] = useState("day"); // Opções: day, week, month
-  const navigate = useNavigate();
 
   // Referências para os gráficos
   const ticketChartRef = useRef(null);
@@ -51,7 +50,7 @@ const Dashboard = () => {
         const data = response.data.tickets;
         if (filter === "day") {
           // Processar tickets por hora
-          const hours = Array.from({ length: 24 }, (_, i) => i); // [0, 1, 2, ..., 23]
+          const hours = Array.from({ length: 15 }, (_, i) => i + 8); // [8, 9, 10, ..., 22]
           const ticketsByHour = hours.map((hour) => {
             return data.filter(
               (ticket) => new Date(ticket.createdAt).getHours() === hour,
@@ -114,7 +113,7 @@ const Dashboard = () => {
         ticketChartInstance.current = new Chart(ctx1, {
           type: "bar", // Mudança para gráfico de barras
           data: {
-            labels: Array.from({ length: 24 }, (_, i) => `${i}:00`),
+            labels: Array.from({ length: 15 }, (_, i) => `${i + 8}:00`),
             datasets: [
               {
                 label: "Tickets por Hora",
@@ -125,7 +124,18 @@ const Dashboard = () => {
               },
             ],
           },
-          options: { responsive: true },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                ticks: {
+                  callback: function (value) {
+                    return Number.isInteger(value) ? value : ""; // Retorna apenas números inteiros
+                  },
+                },
+              },
+            },
+          },
         });
       } else {
         const labels = ticketStats.map((item) => item.date);
@@ -145,7 +155,18 @@ const Dashboard = () => {
               },
             ],
           },
-          options: { responsive: true },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                ticks: {
+                  callback: function (value) {
+                    return Number.isInteger(value) ? value : ""; // Retorna apenas números inteiros
+                  },
+                },
+              },
+            },
+          },
         });
       }
     };
@@ -177,7 +198,18 @@ const Dashboard = () => {
             },
           ],
         },
-        options: { responsive: true },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              ticks: {
+                callback: function (value) {
+                  return Number.isInteger(value) ? value : ""; // Retorna apenas números inteiros
+                },
+              },
+            },
+          },
+        },
       });
     };
 
@@ -192,55 +224,35 @@ const Dashboard = () => {
 
   return (
     <Container>
-      <div className="m-auto mt-4 w-full max-w-4xl rounded-lg bg-gray-800 p-8 shadow-md">
+      <div className="m-auto mt-4 w-full max-w-4xl">
         <h2 className="mb-6 text-center text-2xl text-white">Dashboard</h2>
         <div className="mb-8 flex justify-center gap-4">
-          <button
+          <Button
             onClick={() => setFilter("day")}
             className={`btn ${filter === "day" ? "bg-indigo-500" : "bg-gray-700"}`}
           >
             Dia
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setFilter("week")}
             className={`btn ${filter === "week" ? "bg-indigo-500" : "bg-gray-700"}`}
           >
             Semana
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setFilter("month")}
             className={`btn ${filter === "month" ? "bg-indigo-500" : "bg-gray-700"}`}
           >
             Mês
-          </button>
+          </Button>
         </div>
-        <div className="mb-8">
+        <div className="mb-8 rounded-lg bg-gray-800 p-8 shadow-md">
           <h3 className="mb-4 text-lg text-white">Quantidade de Chamados</h3>
           <canvas ref={ticketChartRef} id="ticketChart"></canvas>
         </div>
-        <div className="mb-8">
+        <div className="mb-8 rounded-lg bg-gray-800 p-8 shadow-md">
           <h3 className="mb-4 text-lg text-white">Tags Mais Usadas</h3>
           <canvas ref={tagChartRef} id="tagChart"></canvas>
-        </div>
-        <div className="mt-8 flex justify-between">
-          <button
-            onClick={() => navigate("/admin/users")}
-            className="btn bg-green-500"
-          >
-            Usuários
-          </button>
-          <button
-            onClick={() => navigate("/admin/companies")}
-            className="btn bg-blue-500"
-          >
-            Empresas
-          </button>
-          <button
-            onClick={() => navigate("/admin/tags")}
-            className="btn bg-purple-500"
-          >
-            Tags
-          </button>
         </div>
       </div>
     </Container>

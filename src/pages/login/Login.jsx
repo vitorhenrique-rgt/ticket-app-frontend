@@ -1,7 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Label, TextInput, Card } from "flowbite-react";
+import { Button, Label, TextInput, Card, Alert } from "flowbite-react";
+import { TbHeadset, TbLogin2 } from "react-icons/tb";
+import { HiInformationCircle } from "react-icons/hi";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -13,10 +15,9 @@ const Login = () => {
 
   // Verifica se o usuário já está logado
   useEffect(() => {
-    const userId = sessionStorage.getItem("userId"); // Ou localStorage se preferir
+    const userId = sessionStorage.getItem("userId");
     if (userId) {
-      // Se o usuário já está logado, redireciona para a página de tickets
-      navigate("/tickets");
+      navigate("/dashboard");
     }
   }, [navigate]);
 
@@ -39,18 +40,24 @@ const Login = () => {
         sessionStorage.setItem("userId", id); // Armazena userId no localStorage
         sessionStorage.setItem("nickname", nickname); // Armazena nickname no localStorage
         sessionStorage.setItem("admin", admin);
-        navigate("/tickets");
+        navigate("/dashboard");
       }
     } catch (error) {
-      setError("Nickname ou senha inválidos.");
+      setError("Nome ou senha inválidos.");
       console.error("Login error:", error);
     }
   };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center dark:bg-gray-900">
+      <div className="mb-6 flex items-center justify-center">
+        <TbHeadset size={48} className="dark:text-white" />
+        <span className="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">
+          TicketApp
+        </span>
+      </div>
       <Card className="w-full max-w-md">
-        <h2 className="mb-6 text-center text-2xl dark:text-white">Login</h2>
+        <h2 className="text-xl font-bold dark:text-white">Login</h2>
         <form
           className="flex w-full max-w-md flex-col gap-4"
           onSubmit={handleSubmit}
@@ -79,10 +86,15 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-2">
-            {error && <p className="text-center text-red-500">{error}</p>}
-          </div>
-          <Button type="submit">Log in</Button>
+          {error && (
+            <Alert color="failure" icon={HiInformationCircle}>
+              <span className="font-medium">{error}</span>
+            </Alert>
+          )}
+          <Button color="blue" type="submit">
+            Log in
+            <TbLogin2 className="ml-2 h-5 w-5" />
+          </Button>
         </form>
       </Card>
     </div>
