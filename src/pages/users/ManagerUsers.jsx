@@ -10,6 +10,8 @@ import {
   Select,
   TextInput,
 } from "flowbite-react";
+import { TbCheck } from "react-icons/tb";
+import { TbX } from "react-icons/tb";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -37,23 +39,20 @@ const ManageUsers = () => {
   }, []);
 
   if (id) {
-    useEffect(() => {
-      const fetchUser = async () => {
-        try {
-          const response = await axios.get(`${apiUrl}/api/users/${id}`);
-          const { name, nickname, isAdmin, companyId, isActive } =
-            response.data;
-          setName(name);
-          setNickname(nickname);
-          setIsAdmin(isAdmin);
-          setPassword(password);
-          setSelectedCompany(companyId);
-        } catch (error) {
-          console.error("Erro ao buscar usuário:", error);
-        }
-      };
-      fetchUser();
-    }, [id]);
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/users/${id}`);
+        const { name, nickname, isAdmin, companyId } = response.data;
+        setName(name);
+        setNickname(nickname);
+        setIsAdmin(isAdmin);
+        setPassword(password);
+        setSelectedCompany(companyId);
+      } catch (error) {
+        console.error("Erro ao buscar usuário:", error);
+      }
+    };
+    fetchUser();
   }
 
   const handleSubmit = async (e) => {
@@ -98,7 +97,7 @@ const ManageUsers = () => {
     <Container>
       <Card className="w-full max-w-xl">
         <h2 className="mb-6 text-center text-2xl dark:text-white">
-          {id ? "Alterar Usuário" : "Criar Usuário"}
+          {id ? "Editar Usuário" : "Criar Usuário"}
         </h2>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>
@@ -194,47 +193,15 @@ const ManageUsers = () => {
               type="button"
               color="failure"
               onClick={() => {
-                navigate(-1);
+                navigate("/admin/users");
               }}
             >
-              <svg
-                className="mr-4 h-6 w-6 text-white"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18 17.94 6M18 18 6.06 6"
-                />
-              </svg>
+              <TbX className="mr-2 h-5 w-5" />
               Cancelar
             </Button>
             <Button className="w-full" type="submit" color="success">
               Salvar
-              <svg
-                className="ml-4 h-6 w-6 text-white"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 3v4a1 1 0 0 1-1 1H5m4 6 2 2 4-4m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z"
-                />
-              </svg>
+              <TbCheck className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </form>
