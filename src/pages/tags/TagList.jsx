@@ -1,6 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Container from "../../components/container/Container";
+import { Button, Table } from "flowbite-react";
+import { TbEdit, TbTag } from "react-icons/tb";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -22,44 +25,60 @@ const TagList = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-900">
-      <div className="w-full max-w-4xl rounded-lg bg-gray-800 p-8 shadow-md">
-        <h2 className="mb-6 text-center text-2xl text-white">Tags</h2>
-        <table className="min-w-full bg-gray-700 text-white">
-          <thead>
-            <tr>
-              <th className="border-b px-4 py-2">ID</th>
-              <th className="border-b px-4 py-2">Nome</th>
-              <th className="border-b px-4 py-2">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tags.map((tag) => (
-              <tr key={tag.id}>
-                <td className="border-b px-4 py-2 text-center">{tag.id}</td>
-                <td className="border-b px-4 py-2 text-center">{tag.name}</td>
-                <td className="border-b px-4 py-2 text-center">
-                  <Link
-                    to={`/admin/tags/edit/${tag.id}`}
-                    className="text-indigo-500 hover:underline"
-                  >
-                    Editar
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <button
-          className="mt-4 block rounded-md bg-indigo-600 px-4 py-2 text-center text-white hover:bg-indigo-500"
+    <Container>
+      <div className="flex w-full items-center justify-between">
+        <h2 className="mb-6 text-center text-2xl dark:text-white">
+          Gerenciar Tags
+        </h2>
+        <Button
           onClick={() => {
             navigate("/admin/tags/new");
           }}
         >
-          Nova Tag
-        </button>
+          Adicionar Novo Tag
+          <TbTag className="ml-2 h-5 w-5" />
+        </Button>
       </div>
-    </div>
+      <div className="w-full overflow-x-auto">
+        <Table>
+          <Table.Head>
+            <Table.HeadCell>#</Table.HeadCell>
+            <Table.HeadCell>Nome</Table.HeadCell>
+            <Table.HeadCell>
+              <span className="sr-only">Editar</span>
+            </Table.HeadCell>
+          </Table.Head>
+
+          <Table.Body className="divide-y">
+            {tags.map((tag, index) => (
+              <Table.Row
+                className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                key={tag.id}
+              >
+                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                  {index + 1}
+                </Table.Cell>
+                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                  {tag.name}
+                </Table.Cell>
+                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                  <a
+                    href="#"
+                    onClick={() => {
+                      navigate(`/admin/tags/edit/${tag.id}`);
+                    }}
+                    className="flex items-center font-medium text-cyan-600 hover:underline dark:text-cyan-500"
+                  >
+                    Editar
+                    <TbEdit className="ml-2 h-4 w-4" />
+                  </a>
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </div>
+    </Container>
   );
 };
 
