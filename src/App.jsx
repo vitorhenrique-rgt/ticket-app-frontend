@@ -4,16 +4,15 @@ import {
   BrowserRouter as Router,
   Routes,
 } from "react-router-dom";
-import ProtectedRoute from "./pages/ProtectedRoute";
 import AuthenticatedLayout from "./components/layouts/AuthenticatedLayout";
-import Dashboard from "./pages/dashboard/Dashboard";
-import Login from "./pages/login/Login";
-import UserList from "./pages/users/UserList";
-import Tickets from "./pages/tickets/Tickets";
-import ManagerUsers from "./pages/users/ManagerUsers";
 import CompanyList from "./pages/companies/CompanyList";
 import ManagerCompanies from "./pages/companies/ManagerCompanies";
+import Dashboard from "./pages/dashboard/Dashboard";
+import Login from "./pages/login/Login";
+import ProtectedRoute from "./pages/ProtectedRoute";
 import ManagerTag from "./pages/tags/ManagerTags";
+import Tickets from "./pages/tickets/Tickets";
+import Users from "./pages/users/Users";
 // (outros imports)
 
 function App() {
@@ -31,9 +30,7 @@ function App() {
         >
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tickets" element={<Tickets />} />
-          <Route path="/admin/users" element={<UserList />} />
-          <Route path="/admin/users/edit/:id" element={<ManagerUsers />} />
-          <Route path="/admin/users/new" element={<ManagerUsers />} />
+          <Route path="/users" element={<Users />} />
           <Route path="/admin/tags/new" element={<ManagerTag />} />
           <Route path="/admin/tags/edit/:id" element={<ManagerTag />} />
           <Route path="/admin/companies" element={<CompanyList />} />
