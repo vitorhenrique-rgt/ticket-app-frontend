@@ -7,7 +7,9 @@ import {
   HR,
   Label,
   Modal,
+  Popover,
   Select,
+  Spinner,
   Textarea,
   TextInput,
 } from "flowbite-react";
@@ -16,6 +18,7 @@ import { HiHome } from "react-icons/hi";
 import { TbPlus, TbSearch, TbX } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import Container from "../../components/container/Container";
+import CustomToast from "../../components/CustomToast";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -44,26 +47,39 @@ const Tickets = () => {
 
   const [openModal, setOpenModal] = useState(false);
 
+  const [toast, setToast] = useState({
+    show: false,
+    type: "",
+    message: "",
+  });
+
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     if (!userId) {
       navigate("/login");
     }
   }, []);
 
+  const fetchAllTickets = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        `${apiUrl}/api/tickets/?page=${currentPage}`,
+      );
+      setTickets(response.data.tickets);
+      setCurrentPage(response.data.currentPage);
+      setTotalPages(response.data.totalPages);
+      setTotalRecords(response.data.totalItems);
+    } catch (error) {
+      console.error("Error fetching tickets:", error);
+      showToast("error", "Erro ao carregar tickets");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchAllTickets = async () => {
-      try {
-        const response = await axios.get(
-          `${apiUrl}/api/tickets/?page=${currentPage}`,
-        );
-        setTickets(response.data.tickets);
-        setCurrentPage(response.data.currentPage);
-        setTotalPages(response.data.totalPages);
-        setTotalRecords(response.data.totalItems);
-      } catch (error) {
-        console.error("Error fetching tickets:", error);
-      }
-    };
     fetchAllTickets();
   }, [currentPage, navigate]);
 
@@ -127,17 +143,13 @@ const Tickets = () => {
     setOpenModal(true);
   };
 
-  const handleSubmit = async () => {
-    const userId = sessionStorage.getItem("userId");
-    if (!userId) {
-      alert("Usuário não autenticado");
-      return;
-    }
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setOpenModal(false);
+    showToast("loading", "Processando...");
     if (ticketId) {
       //logica para alteração
     } else {
-      setOpenModal(false);
       try {
         const response = await axios.post(`${apiUrl}/api/tickets`, {
           title,
@@ -150,17 +162,24 @@ const Tickets = () => {
         });
 
         if (response.status === 201) {
-          navigate("/tickets");
+          showToast("success", "Ticket criado com sucesso!");
+          await fetchAllTickets();
         } else {
           console.log("Erro ao criar o ticket", response.data);
         }
       } catch (error) {
+        showToast("error", "Erro ao processar o ticket");
         console.error(
           "Erro na requisição:",
           error.response ? error.response.data : error.message,
         );
       }
     }
+  };
+
+  const showToast = (type, message) => {
+    setToast({ show: true, type, message });
+    setTimeout(() => setToast({ show: false, type: "", message: "" }), 3000);
   };
 
   return (
@@ -195,68 +214,89 @@ const Tickets = () => {
           Novo Ticket
         </Button>
       </div>
-      {tickets.map((ticket) => (
-        <Card
-          key={ticket.id}
-          href="#"
-          className="w-full"
-          onClick={() => {
-            handleManageTicket(ticket.id);
-          }}
-        >
-          <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            {ticket.title}
-          </h5>
-          <p className="font-normal text-gray-700 dark:text-gray-400">
-            {ticket.description}
-          </p>
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <span className="inline text-sm text-gray-400">Status:</span>
-              <span
-                className={`inline text-sm font-medium ${
-                  ticket.status == "closed"
-                    ? "text-green-400"
-                    : "in_progress"
-                      ? "text-yellow-400"
-                      : "text-blue-400"
-                }`}
+
+      {isLoading ? (
+        <div className="flex h-64 items-center justify-center">
+          <Spinner size="xl" />
+        </div>
+      ) : (
+        tickets.map((ticket) => (
+          <Card
+            key={ticket.id}
+            href="#"
+            className="w-full"
+            onClick={() => {
+              handleManageTicket(ticket.id);
+            }}
+          >
+            <h3 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+              {ticket.title}
+            </h3>
+            <div className="flex h-5 w-full">
+              <Popover
+                trigger="hover"
+                content={
+                  <div className="w-96 text-sm text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                    <p className="p-2 italic">{ticket.description}</p>
+                  </div>
+                }
               >
-                {ticket.status == "closed"
-                  ? "fechado"
-                  : "in_progress"
-                    ? "em progresso"
-                    : "aberto"}
-              </span>
+                <p className="truncate text-gray-700 selection:font-normal dark:text-white">
+                  {ticket.description}
+                </p>
+              </Popover>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge color={"info"}>{ticket.Tags[0].name}</Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="inline text-sm dark:text-gray-400">
-                Requerente:
-              </span>
-              <div>
-                <span className="inline text-sm font-medium dark:text-gray-400">
-                  {ticket.requester.name}
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <span className="inline text-sm text-gray-400">Status:</span>
+                <span
+                  className={`inline text-sm font-medium ${
+                    ticket.status == "closed"
+                      ? "text-green-400"
+                      : "in_progress"
+                        ? "text-yellow-400"
+                        : "text-blue-400"
+                  }`}
+                >
+                  {ticket.status == "closed"
+                    ? "fechado"
+                    : "in_progress"
+                      ? "em progresso"
+                      : "aberto"}
                 </span>
-                <span className="inline text-sm font-medium dark:text-gray-400">
-                  /
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge color={"info"}>{ticket.Tags[0].name}</Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="inline text-sm text-gray-400">
+                  Requerente:
                 </span>
-                <span className="inline text-sm font-medium dark:text-gray-400">
-                  {ticket.Company.name}
+                <div>
+                  <span className="inline text-sm font-medium text-gray-400">
+                    {ticket.requester.name}
+                  </span>
+                  <span className="inline text-sm font-medium text-gray-400">
+                    /
+                  </span>
+                  <span className="inline text-sm font-medium text-gray-400">
+                    {ticket.Company.name}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="inline text-sm text-gray-400">Data:</span>
+                <span className="inline text-sm font-medium text-gray-400">
+                  {new Date(ticket.createdAt).toLocaleDateString("pt-BR")}
+                </span>
+                <span className="inline text-sm font-medium text-gray-400">
+                  {new Date(ticket.createdAt).toLocaleTimeString("pt-BR")}
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="inline text-sm dark:text-gray-400">Data:</span>
-              <span className="inline text-sm font-medium dark:text-gray-400">
-                {new Date(ticket.createdAt).toLocaleDateString("pt-BR")}
-              </span>
-            </div>
-          </div>
-        </Card>
-      ))}
+          </Card>
+        ))
+      )}
       <div className="mt-6 flex overflow-x-auto sm:justify-center">
         <div className="flex flex-col items-center">
           <span className="text-sm text-gray-700 dark:text-gray-400">
@@ -420,6 +460,13 @@ const Tickets = () => {
           </form>
         </Card>
       </Modal>
+      {toast.show && (
+        <CustomToast
+          type={toast.type}
+          message={toast.message}
+          onDismiss={() => setToast({ show: false, type: "", message: "" })}
+        />
+      )}
     </Container>
   );
 };
