@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import { Avatar, DarkThemeToggle, Dropdown, Navbar } from "flowbite-react";
+import { useEffect, useState } from "react";
 import { TbHeadset } from "react-icons/tb";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -91,9 +91,9 @@ const Header = () => {
         </Navbar.Link>
         <Navbar.Link
           className="cursor-pointer"
-          active={location.pathname.startsWith("/admin/users")}
+          active={location.pathname.startsWith("/users")}
           onClick={() => {
-            navigate("admin/users");
+            navigate("/users");
           }}
         >
           Usuários
